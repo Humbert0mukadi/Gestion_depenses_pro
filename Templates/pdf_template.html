@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 12px; margin: 20px; }
+    h1 { text-align: center; margin-bottom: 10px; }
+    .meta { margin-top: 6px; font-size: 11px; color: #555; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    th, td { border: 1px solid #333; padding: 6px; text-align: left; vertical-align: top; }
+    th { background: #eee; }
+    tfoot td { font-weight: bold; background: #f7f7f7; }
+  </style>
+</head>
+<body>
+  <h1>Liste des dépenses</h1>
+  <div class="meta">
+    <!-- Tu peux ajouter ici des infos comme période, nom du demandeur, etc. -->
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Institution</th>
+        <th>Reçu</th>
+        <th>Quantité</th>
+        <th>Motif</th>
+        <th>Date</th>
+        <th>Somme payé</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td>{{ r.institution }}</td>
+        <td>{{ r.recu }}</td>
+        <td>{{ r.quantite }}</td>
+        <td>{{ r.motif }}</td>
+        <td>{{ r.date }}</td>
+        <td>{{ r.somme }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

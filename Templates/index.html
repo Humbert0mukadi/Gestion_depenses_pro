@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Gestion des dépenses</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-4">
+  <h1 class="mb-4">Ajouter une dépense</h1>
+
+  <form action="{{ url_for('add_row') }}" method="post" class="mb-4">
+    <div class="mb-3"><label class="form-label">Institution</label><input type="text" name="institution" class="form-control" required></div>
+    <div class="mb-3"><label class="form-label">Reçu</label><input type="text" name="recu" class="form-control"></div>
+    <div class="mb-3"><label class="form-label">Quantité</label><input type="text" name="quantite" class="form-control"></div>
+    <div class="mb-3"><label class="form-label">Motif</label><input type="text" name="motif" class="form-control"></div>
+    <div class="mb-3"><label class="form-label">Date</label><input type="date" name="date" class="form-control"></div>
+    <div class="mb-3"><label class="form-label">Somme payé</label><input type="text" name="somme" class="form-control"></div>
+    <button class="btn btn-primary">Ajouter</button>
+    <a class="btn btn-success" href="{{ url_for('export_docx') }}">Exporter Word</a>
+    <a class="btn btn-danger" href="{{ url_for('export_pdf') }}">Exporter PDF</a>
+  </form>
+
+  <h2>Filtres</h2>
+  <form method="get" action="/" class="row mb-4">
+    <div class="col"><input type="text" name="institution" class="form-control" placeholder="Institution"></div>
+    <div class="col"><input type="date" name="date" class="form-control"></div>
+    <div class="col"><button class="btn btn-secondary">Filtrer</button></div>
+  </form>
+
+  <h2>Tableau des dépenses</h2>
+  <table class="table table-striped table-bordered">
+    <thead class="table-dark">
+      <tr>
+        <th>Institution</th><th>Reçu</th><th>Quantité</th><th>Motif</th><th>Date</th><th>Somme payé</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td>{{ r.institution }}</td>
+        <td>{{ r.recu }}</td>
+        <td>{{ r.quantite }}</td>
+        <td>{{ r.motif }}</td>
+        <td>{{ r.date }}</td>
+        <td>{{ r.somme }}</td>
+        <td>
+          <a href="{{ url_for('edit_row', id=r.id) }}" class="btn btn-warning btn-sm">Modifier</a>
+          <form action="{{ url_for('delete_row', id=r.id) }}" method="post" style="display:inline;">
+            <button class="btn btn-danger btn-sm">Supprimer</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="alert alert-info mt-3">
+    <strong>Total estim
