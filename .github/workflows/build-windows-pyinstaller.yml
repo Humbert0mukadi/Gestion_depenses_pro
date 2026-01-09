@@ -1,0 +1,67 @@
+name: Build Windows executables (PyInstaller)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, feature/form-ux ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-windows:
+    name: Build Windows EXE
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirement.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirement.txt
+          pip install pyinstaller pyinstaller-hooks-contrib --no-warn-script-location
+
+      - name: Show python and pip info
+        run: |
+          python -V
+          pip -V
+
+      - name: Build onedir (recommended first check)
+        run: |
+          python -m PyInstaller --clean --noconfirm --onedir --windowed --name GestionDepensesLauncherDir --add-data "Templates;Templates" --distpath dist_dir --workpath build_pyinstaller_dir --log-level INFO launcher\run_launcher.py
+
+      - name: Compress onedir artifact
+        run: |
+          powershell -Command "if (Test-Path dist_dir) { Compress-Archive -Path 'dist_dir/*' -DestinationPath 'dist_dir.zip' -Force } else { Write-Error 'dist_dir not found' }"
+
+      - name: Upload onedir artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GestionDepensesLauncherDir-${{ github.sha }}
+          path: dist_dir.zip
+
+      - name: Build onefile (single exe)
+        run: |
+          python -m PyInstaller --clean --noconfirm --onefile --windowed --name GestionDepensesLauncher --add-data "Templates;Templates" --distpath dist --workpath build_pyinstaller --log-level INFO launcher\run_launcher.py
+
+      - name: Upload onefile artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GestionDepensesLauncher-${{ github.sha }}
+          path: |
+            dist
