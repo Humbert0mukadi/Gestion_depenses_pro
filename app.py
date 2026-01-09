@@ -50,7 +50,7 @@ def index():
 
     rows = query.all()
     total_fc = calcul_total(rows)
-    return render_template("index.html", rows=rows, total_fc=total_fc)
+    return render_template("index.html", rows=rows, total_somme=total_fc)
 
 @app.route("/add", methods=["POST"])
 def add_row():
