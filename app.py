@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, send_file
+from flask import Flask, render_template, request, redirect, url_for, send_file, flash
 from flask_sqlalchemy import SQLAlchemy
 from io import BytesIO
 from docx import Document
 from xhtml2pdf import pisa
 
 app = Flask(__name__)
+app.secret_key = 'dev'
 
 # Configuration base SQLite
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///depenses.db'
@@ -54,16 +55,21 @@ def index():
 
 @app.route("/add", methods=["POST"])
 def add_row():
+    somme_input = request.form.get("somme", "").strip()
+    if not somme_input or not any(c.isdigit() for c in somme_input):
+        flash("Veuillez saisir un montant valide (ex: 1 000 FC)", "danger")
+        return redirect(url_for("index"))
     depense = Depense(
         institution=request.form.get("institution"),
         recu=request.form.get("recu"),
         quantite=request.form.get("quantite"),
         motif=request.form.get("motif"),
         date=request.form.get("date"),
-        somme=request.form.get("somme")
+        somme=somme_input
     )
     db.session.add(depense)
     db.session.commit()
+    flash("Dépense ajoutée avec succès.", "success")
     return redirect(url_for("index"))
 
 # --- Supprimer une ligne ---
@@ -79,13 +85,18 @@ def delete_row(id):
 def edit_row(id):
     depense = Depense.query.get_or_404(id)
     if request.method == "POST":
+        somme_input = request.form.get("somme", "").strip()
+        if not somme_input or not any(c.isdigit() for c in somme_input):
+            flash("Veuillez saisir un montant valide (ex: 1 000 FC)", "danger")
+            return redirect(url_for("edit_row", id=id))
         depense.institution = request.form.get("institution")
         depense.recu = request.form.get("recu")
         depense.quantite = request.form.get("quantite")
         depense.motif = request.form.get("motif")
         depense.date = request.form.get("date")
-        depense.somme = request.form.get("somme")
+        depense.somme = somme_input
         db.session.commit()
+        flash("Dépense mise à jour.", "success")
         return redirect(url_for("index"))
     return render_template("edit.html", depense=depense)
 
