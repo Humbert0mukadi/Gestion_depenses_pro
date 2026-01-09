@@ -33,4 +33,6 @@ Notes:
 - To trigger a manual build: open the repository **Actions** tab, select **Build Windows executables (PyInstaller)**, and click **Run workflow**.
 - To fetch the artifacts: open the workflow run page after it completes and download the artifacts from the **Artifacts** section.
 
-> Tip: the onedir artifact is useful for quick testing; the onefile exe is the final distributable (may be large). If you'd like, I can add a step to automatically create a GitHub Release and attach the onefile exe.
+**Releases:** the workflow now creates a **GitHub Release (prerelease)** for the onefile build and attaches the `GestionDepensesLauncher.exe` as a release asset; you can also download the exe from the repository **Releases** tab after the workflow finishes.
+
+> Tip: the onedir artifact is useful for quick testing; the onefile exe is the final distributable (may be large). If you'd like, I can also make the Release non-prerelease or automatically create a GitHub Release note template.

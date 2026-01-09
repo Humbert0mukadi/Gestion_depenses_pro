@@ -65,3 +65,25 @@ jobs:
           name: GestionDepensesLauncher-${{ github.sha }}
           path: |
             dist
+
+      - name: Create GitHub Release for artifact
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: GestionDepensesLauncher-${{ github.sha }}
+          release_name: GestionDepensesLauncher ${{ github.sha }}
+          body: Automated release built by CI (PyInstaller onefile)
+          draft: false
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload onefile exe as release asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/GestionDepensesLauncher.exe
+          asset_name: GestionDepensesLauncher.exe
+          asset_content_type: application/octet-stream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
